@@ -1,6 +1,5 @@
-function Autobind(target: any, description: string, properties: PropertyDescriptor): PropertyDescriptor{
-    console.log(description);
-    console.log(target)
+function Autobind(_target: any, _description: string, properties: PropertyDescriptor): PropertyDescriptor{
+    
     const methodInvocation = properties.value;
     return {
         enumerable: false,
@@ -42,11 +41,36 @@ class ProjectInput {
         elementToAttachTo.insertAdjacentElement('afterbegin', elementToAttach);
     }
 
+    private getUserInput(): [string, string, number] | void {
+        const title = this.titleFormElement.value;
+        const description = this.descriptionFormElement.value;
+        const people = this.peopleFormElement.value;
+
+        if (title.length === 0 || description.length === 0 || people.length === 0){
+            alert('Invalid input');
+            return;
+        }
+
+        return [title, description, +people];
+    }
+
     @Autobind
     private submitValue(event: Event){
 
         event.preventDefault();
         console.log(this.titleFormElement.value);
+
+        const userInputs = this.getUserInput();
+        if (Array.isArray(userInputs)){
+            console.log(userInputs)
+            this.resetUserInputs();
+        }   
+    }
+
+    private resetUserInputs(){
+        this.titleFormElement.value = '';
+        this.descriptionFormElement.value = '';
+        this.peopleFormElement.value = '';
     }
 
     private configure(){
