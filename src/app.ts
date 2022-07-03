@@ -15,7 +15,7 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
 
     interface ValidationConfig{
         [classDescription: string]:{
-            [formField: string]: string 
+            [formField: string]: string []
         }
     }
 
@@ -25,7 +25,9 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
         propName: string){
         validator[target.constructor.name] = {
             ...validator[target.constructor.name],
-            [propName]: 'title_valid'
+            [propName]: [
+                ...validator[target.constructor.name][propName],
+                'title_valid']
         }
     }
 
@@ -33,7 +35,9 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
         propName: string){
             validator[target.constructor.name] = {
                 ...validator[target.constructor.name],
-                [propName]: 'description_valid'
+                [propName]: [
+                    ...validator[target.constructor.name][propName],
+                'description_valid']
             }
         }
 
@@ -41,8 +45,18 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
         propName: string){
             validator[target.constructor.name] = {
                 ...validator[target.constructor.name],
-                [propName]: 'people_valid'
+                [propName]: [...validator[target.constructor.name][propName],'people_valid']
             }
+        }
+    
+        function MinLength(target: any, propName: string, minLength: number){
+            console.log(`Minlength is: ${minLength}`);
+            validator[target.constructor.name] = {
+                    ...validator[target.constructor.name],
+                    [propName]: [
+                        ...validator[target.constructor.name][propName],
+                        'min_length']
+                }
         }
 
 function validate(obj: any){
@@ -54,8 +68,9 @@ function validate(obj: any){
         console.log(validatorInfo[field])
         const validationType = validatorInfo[field];
         console.log(obj[field])
-        switch(validationType){
-        
+        for (const property of validationType){
+        console.log(property);
+        switch(property){
             case 'title_valid':
             case 'description_valid':
                 isValid = isValid && obj[field].value.length > 0;
@@ -64,6 +79,7 @@ function validate(obj: any){
                 isValid = isValid && +obj[field].value > 0;
                 break; 
         }
+    }
     }
     return isValid;
 }
