@@ -1,3 +1,4 @@
+// bind to class-instance
 function Autobind(_target: any, _description: string, properties: PropertyDescriptor): PropertyDescriptor{
     
     const methodInvocation = properties.value;
@@ -10,6 +11,43 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
         }
     }
 
+    // validate userInput
+
+    interface ValidationConfig{
+        [classDescription: string]:{
+            [formField: string]: string 
+        }
+    }
+
+    let validator: ValidationConfig = {}
+
+    function TitleValid(target: any, 
+        propName: string){
+        validator[target.constructor.name] = {
+            ...validator[target.constructor.name],
+            [propName]: 'title_valid'
+        }
+    }
+
+    function DescriptionValid(target: any,
+        propName: string){
+            validator[target.constructor.name] = {
+                ...validator[target.constructor.name],
+                [propName]: 'description_valid'
+            }
+        }
+
+    function PeopleValid(target: any,
+        propName: string){
+            validator[target.constructor.name] = {
+                ...validator[target.constructor.name],
+                [propName]: 'people_valid'
+            }
+        }
+
+function validate(obj: any){
+    console.log(obj.constructor.name);
+}
 
 class ProjectInput {
     templateElement: HTMLTemplateElement;
@@ -80,4 +118,5 @@ class ProjectInput {
 
 }
 
-new ProjectInput();
+const projectInput: ProjectInput = new ProjectInput();
+validate(projectInput);
