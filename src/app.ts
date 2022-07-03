@@ -47,6 +47,25 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
 
 function validate(obj: any){
     console.log(obj.constructor.name);
+    const validatorInfo = validator[obj.constructor.name];
+    let isValid = true;
+    for (const field in validatorInfo){
+        console.log(field);
+        console.log(validatorInfo[field])
+        const validationType = validatorInfo[field];
+        console.log(obj[field])
+        switch(validationType){
+        
+            case 'title_valid':
+            case 'description_valid':
+                isValid = isValid && obj[field].value.length > 0;
+                break;
+            case 'people_valid':
+                isValid = isValid && +obj[field].value > 0;
+                break; 
+        }
+    }
+    return isValid;
 }
 
 class ProjectInput {
@@ -54,8 +73,11 @@ class ProjectInput {
     divElement: HTMLDivElement;
     formElement: HTMLFormElement;
 
+    @TitleValid
     titleFormElement: HTMLInputElement;
+    @DescriptionValid
     descriptionFormElement: HTMLInputElement;
+    @PeopleValid
     peopleFormElement: HTMLInputElement
 
     constructor(){
@@ -79,6 +101,7 @@ class ProjectInput {
         elementToAttachTo.insertAdjacentElement('afterbegin', elementToAttach);
     }
 
+    /*
     private getUserInput(): [string, string, number] | void {
         const title = this.titleFormElement.value;
         const description = this.descriptionFormElement.value;
@@ -90,7 +113,7 @@ class ProjectInput {
         }
 
         return [title, description, +people];
-    }
+    }*/
 
     @Autobind
     private submitValue(event: Event){
@@ -98,11 +121,19 @@ class ProjectInput {
         event.preventDefault();
         console.log(this.titleFormElement.value);
 
+        /*
         const userInputs = this.getUserInput();
         if (Array.isArray(userInputs)){
             console.log(userInputs)
             this.resetUserInputs();
-        }   
+        } */  
+       if(!validate(this)){
+        alert('Invalid Input');
+       } else {
+        alert('Beautifully input values')
+       this.resetUserInputs();
+       }
+       
     }
 
     private resetUserInputs(){
@@ -119,4 +150,4 @@ class ProjectInput {
 }
 
 const projectInput: ProjectInput = new ProjectInput();
-validate(projectInput);
+console.log(validate(projectInput));
