@@ -97,6 +97,83 @@ function validate(obj: any){
     return isValid;
 }
 
+// Global state management
+
+class ProjectState{
+
+    projectList: any[] = [];
+    listeners: Function[] = [];
+
+    static instance: ProjectState;
+
+    static getInstance(){
+        if (!this.instance){
+            this.instance = new ProjectState();
+        }
+        return this.instance;
+    }
+
+    private constructor(){
+
+    }
+
+    addProject(
+        title: string,
+        description: string,
+        people: number
+    ){
+        this.projectList.push({
+            id: Math.random(),
+            title: title,
+            description: description,
+            people: people
+        });
+
+            for (const func of this.listeners){
+                func(this.projectList.slice());
+            }
+
+    }
+
+    addListener(listener: Function){
+        this.listeners.push(listener);
+    }
+}
+
+const projectState: ProjectState = ProjectState.getInstance();
+
+// Project List
+
+class ProjectList {
+    templateElement: HTMLTemplateElement;
+    divElement: HTMLDivElement;
+    sectionElement: HTMLElement;
+
+    constructor(private type: 'active'|'finished'){
+        this.templateElement = document.getElementById('project-list') as HTMLTemplateElement;
+        this.divElement = document.getElementById('app') as HTMLDivElement;
+
+        let importedFromTemplate: DocumentFragment = document.importNode(this.templateElement.content, true);
+        this.sectionElement = importedFromTemplate.firstElementChild as HTMLElement
+        this.sectionElement.id = `${this.type}-projects`;
+
+        projectState.addListener((project) => {})
+
+        this.prerender();
+        this.attach(this.sectionElement, this.divElement)
+    }
+
+    prerender(){
+        const header = this.sectionElement.querySelector('h2') as HTMLHeadElement;
+        header.innerHTML = `${this.type}-list`;
+    }
+
+    private attach(elementToAttach: HTMLElement, elementToAttachTo: HTMLElement){
+        elementToAttachTo.insertAdjacentElement('beforeend', elementToAttach);
+    }
+}
+
+// Project inputs
 class ProjectInput {
     templateElement: HTMLTemplateElement;
     divElement: HTMLDivElement;
@@ -151,6 +228,8 @@ class ProjectInput {
         event.preventDefault();
         console.log(this.titleFormElement.value);
 
+
+
         /*
         const userInputs = this.getUserInput();
         if (Array.isArray(userInputs)){
@@ -163,6 +242,12 @@ class ProjectInput {
         alert('Beautifully input values')
        this.resetUserInputs();
        }
+        const title = this.titleFormElement.value;
+        const description = this.descriptionFormElement.value;
+        const people = +this.peopleFormElement.value;
+
+        projectState.addProject(title, description, people)
+
        
     }
 
@@ -180,4 +265,6 @@ class ProjectInput {
 }
 
 const projectInput: ProjectInput = new ProjectInput();
+const projectListActive: ProjectList = new ProjectList('active');
+const projectListFinished: ProjectList = new ProjectList('finished')
 console.log(validate(projectInput));
