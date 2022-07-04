@@ -15,7 +15,7 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
 
     interface ValidationConfig{
         [classDescription: string]:{
-            [formField: string]: string []
+            [formField: string]: (string  | [string, number])[],
         }
     }
 
@@ -26,7 +26,7 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
         validator[target.constructor.name] = {
             ...validator[target.constructor.name],
             [propName]: [
-                ...validator[target.constructor.name][propName],
+                ...validator?.[target.constructor.name]?.[propName] ?? [],
                 'title_valid']
         }
     }
@@ -36,7 +36,7 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
             validator[target.constructor.name] = {
                 ...validator[target.constructor.name],
                 [propName]: [
-                    ...validator[target.constructor.name][propName],
+                    ...validator?.[target.constructor.name]?.[propName] ?? [],
                 'description_valid']
             }
         }
@@ -45,23 +45,26 @@ function Autobind(_target: any, _description: string, properties: PropertyDescri
         propName: string){
             validator[target.constructor.name] = {
                 ...validator[target.constructor.name],
-                [propName]: [...validator[target.constructor.name][propName],'people_valid']
+                [propName]: [...validator?.[target.constructor.name]?.[propName] ?? [],'people_valid']
             }
         }
-    
-        function MinLength(target: any, propName: string, minLength: number){
+
+        function MinLength(minLength: number){
             console.log(`Minlength is: ${minLength}`);
-            validator[target.constructor.name] = {
+            return function(target:any, propName: string){
+                validator[target.constructor.name] = {
                     ...validator[target.constructor.name],
                     [propName]: [
-                        ...validator[target.constructor.name][propName],
-                        'min_length']
-                }
+                        ...validator?.[target.constructor.name]?.[propName] ?? [],
+                        ['min_length', minLength]]
+                };
+            }
         }
 
 function validate(obj: any){
     console.log(obj.constructor.name);
     const validatorInfo = validator[obj.constructor.name];
+    console.log(validator);
     let isValid = true;
     for (const field in validatorInfo){
         console.log(field);
@@ -77,7 +80,17 @@ function validate(obj: any){
                 break;
             case 'people_valid':
                 isValid = isValid && +obj[field].value > 0;
-                break; 
+                break;
+            default:
+                if (property.length === 2 && property[0] === 'min_length'){
+                    console.log(`Minlength is : ${property[1]}`)
+                    isValid = isValid && (obj[field].value + '').trim().length >= property[1];
+                    break
+                }
+                isValid = false;
+                break;
+
+
         }
     }
     }
@@ -92,6 +105,7 @@ class ProjectInput {
     @TitleValid
     titleFormElement: HTMLInputElement;
     @DescriptionValid
+    @MinLength(2)
     descriptionFormElement: HTMLInputElement;
     @PeopleValid
     peopleFormElement: HTMLInputElement
