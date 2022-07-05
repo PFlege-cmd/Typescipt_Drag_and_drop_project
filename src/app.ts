@@ -234,10 +234,8 @@ class ProjectList extends Component<HTMLElement, HTMLDivElement> {
        const listEl = document.getElementById(`${this.type}-projects-list`) as HTMLUListElement;
        listEl.innerHTML = '';
        for (const project of this.assignedProjects){
-           console.log(project.title)
-           const listItem = document.createElement('li');
-           listItem.textContent = project.title;
-           listEl.appendChild(listItem);
+           const newProject: ProjectItem = new ProjectItem(project.title, project.description, project.people)
+           newProject.addToList(listEl);
        }
     }
 }
@@ -272,18 +270,8 @@ class ProjectInput extends Component<HTMLFormElement, HTMLDivElement> {
 
     @Autobind
     private submitValue(event: Event){
-
         event.preventDefault();
-        console.log(this.titleFormElement.value);
 
-
-
-        /*
-        const userInputs = this.getUserInput();
-        if (Array.isArray(userInputs)){
-            console.log(userInputs)
-            this.resetUserInputs();
-        } */  
        if(!validate(this)){
             alert('Invalid Input');
        } else {
@@ -295,9 +283,6 @@ class ProjectInput extends Component<HTMLFormElement, HTMLDivElement> {
            projectState.addProject(title, description, people)
            this.resetUserInputs();
        }
-
-
-       
     }
 
     private resetUserInputs(){
@@ -309,8 +294,26 @@ class ProjectInput extends Component<HTMLFormElement, HTMLDivElement> {
     configure(){
         this.element.addEventListener('submit', this.submitValue)
     }
+}
 
+class ProjectItem {
 
+    listElement: HTMLLIElement;
+
+    constructor(private title: string, private description: string, private people: number){
+        this.listElement = document.createElement('li') as HTMLLIElement;
+        let describingParagraph = document.createElement('p') as HTMLParagraphElement;
+        describingParagraph.textContent = description;
+        let numberParagraph = document.createElement('p');
+        numberParagraph.textContent = people.toString();
+        this.listElement.textContent = title;
+        this.listElement.insertAdjacentElement('beforeend', describingParagraph);
+        this.listElement.insertAdjacentElement('beforeend', numberParagraph);
+    }
+
+    addToList(listEl: HTMLUListElement){
+        listEl.appendChild(this.listElement);
+    }
 }
 
 const projectInput: ProjectInput = new ProjectInput();
