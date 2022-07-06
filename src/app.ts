@@ -175,7 +175,7 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement>{
                 public attachBefore: boolean,
                 public templateId: string,
                 public targetElementId: string,
-                public elementId:string){
+                public elementId?:string){
         this.templateElement = document.getElementById(templateId) as HTMLTemplateElement;
         console.log(`target-element id is: ${targetElementId}`)
         this.targetElement = document.getElementById(targetElementId) as U;
@@ -183,7 +183,9 @@ abstract class Component<T extends HTMLElement, U extends HTMLElement>{
 
         let importedFromTemplate: DocumentFragment = document.importNode(this.templateElement.content, true);
         this.element = importedFromTemplate.firstElementChild as T;
-        this.element.id = elementId;
+        if (elementId){
+            this.element.id = elementId;
+        }
     }
 
     abstract configure(): void;
@@ -234,8 +236,7 @@ class ProjectList extends Component<HTMLElement, HTMLDivElement> {
        const listEl = document.getElementById(`${this.type}-projects-list`) as HTMLUListElement;
        listEl.innerHTML = '';
        for (const project of this.assignedProjects){
-           const newProject: ProjectItem = new ProjectItem(project.title, project.description, project.people)
-           newProject.addToList(listEl);
+           const newProject: ProjectItem = new ProjectItem(project, `${this.type}-projects-list`);
        }
     }
 }
@@ -296,23 +297,30 @@ class ProjectInput extends Component<HTMLFormElement, HTMLDivElement> {
     }
 }
 
-class ProjectItem {
+class ProjectItem extends Component<HTMLLIElement, HTMLUListElement> {
 
-    listElement: HTMLLIElement;
+    project: Project;
 
-    constructor(private title: string, private description: string, private people: number){
-        this.listElement = document.createElement('li') as HTMLLIElement;
-        let describingParagraph = document.createElement('p') as HTMLParagraphElement;
-        describingParagraph.textContent = description;
-        let numberParagraph = document.createElement('p');
-        numberParagraph.textContent = people.toString();
-        this.listElement.textContent = title;
-        this.listElement.insertAdjacentElement('beforeend', describingParagraph);
-        this.listElement.insertAdjacentElement('beforeend', numberParagraph);
+    constructor(project: Project, targetId: string){
+        super(false, 'single-project', targetId, project.id.toString())
+        this.project = project;
+        this.renderContent();
     }
 
-    addToList(listEl: HTMLUListElement){
-        listEl.appendChild(this.listElement);
+
+    configure(): void {
+    }
+
+    renderContent(): void {
+        const titleH3: HTMLHeadElement = this.element.querySelector('h3')!;
+        titleH3.textContent = this.project.title;
+
+        const descriptionH2: HTMLHeadElement = this.element.querySelector('h2')!
+        descriptionH2.textContent = this.project.description;
+
+        const peopleParagraph: HTMLParagraphElement = this.element.querySelector('p')!;
+        peopleParagraph.textContent = this.project.people.toString();
+        this.attach(this.element, this.targetElement);
     }
 }
 
