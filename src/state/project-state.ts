@@ -1,6 +1,6 @@
-import { Project } from '../models/project.js';
-import { State } from './state.js';
-import { ProjectStatus } from '../components/project-status.js';
+import { Project } from '../models/project';
+import { State } from './state';
+import { ProjectStatus } from '../components/project-status';
 
 export class ProjectState extends State<Project>{
 

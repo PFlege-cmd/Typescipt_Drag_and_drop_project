@@ -1,6 +1,6 @@
-import { ProjectInput } from './components/project-input.js';
-import { ProjectList } from './components/project-list.js';
-import { validate } from './util/validation.js';
+import { ProjectInput } from './components/project-input';
+import { ProjectList } from './components/project-list';
+import { validate } from './util/validation';
 
 
 const projectInput: ProjectInput = new ProjectInput();

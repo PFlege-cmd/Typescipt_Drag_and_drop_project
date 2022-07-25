@@ -1,6 +1,6 @@
-import { Autobind, DescriptionValid, MinLength, PeopleValid, TitleValid, validate } from '../util/validation.js';
-import BaseComponent from './base-component.js';
-import { projectState } from '../state/project-state.js';
+import { Autobind, DescriptionValid, MinLength, PeopleValid, TitleValid, validate } from '../util/validation';
+import BaseComponent from './base-component';
+import { projectState } from '../state/project-state';
 
 export class ProjectInput extends BaseComponent<HTMLFormElement, HTMLDivElement> {
     @TitleValid
@@ -13,9 +13,9 @@ export class ProjectInput extends BaseComponent<HTMLFormElement, HTMLDivElement>
 
     constructor(){
         super(true,'project-input','app', 'user-input')
-        this.titleFormElement = this.element.querySelector('#title')!;
-        this.descriptionFormElement = this.element.querySelector('#description')!;
-        this.peopleFormElement = this.element.querySelector('#people')!;
+        this.titleFormElement = this.element.querySelector('#title') as HTMLInputElement;
+        this.descriptionFormElement = this.element.querySelector('#description') as HTMLInputElement;
+        this.peopleFormElement = this.element.querySelector('#people') as HTMLInputElement;
 
         this.configure()
         this.attach(this.targetElement, this.element)

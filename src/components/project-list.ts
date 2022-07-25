@@ -1,10 +1,10 @@
-import { Droppable } from '../models/drag-and-drop.js';
-import { Project } from '../models/project.js';
-import { Autobind } from '../util/validation.js';
-import BaseComponent from './base-component.js';
-import { ProjectItem } from './project-item.js';
-import { projectState } from '../state/project-state.js';
-import { ProjectStatus } from './project-status.js';
+import { Droppable } from '../models/drag-and-drop';
+import { Project } from '../models/project';
+import { Autobind } from '../util/validation';
+import BaseComponent from './base-component';
+import { ProjectItem } from './project-item';
+import { projectState } from '../state/project-state';
+import { ProjectStatus } from './project-status';
 
 export class ProjectList extends BaseComponent<HTMLElement, HTMLDivElement> implements Droppable {
 

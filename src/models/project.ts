@@ -1,7 +1,7 @@
 
 // Project class
 
-import { ProjectStatus } from '../components/project-status.js';
+import { ProjectStatus } from '../components/project-status';
 
 export class Project{
     constructor(
